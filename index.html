@@ -5,111 +5,110 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
         <title>CodeNames:Duet - Grupo 5</title>
         <link rel="icon" type="image/x-icon" href="./favicon.ico">
+        <link rel="stylesheet" href="./css/style.css">
     </head>
     <body>
-        <header>
-            <h1>Navegação</h1>
-            <nav>
-                <h2>
-                <a href="#Integrantes">Integrantes</a>
-                </h2>
-                <h2>
-                <a href="#DescProjeto">Descrição do Projeto</a>
-                </h2>
-                <h2>
-                <a href="#Duets">O Jogo Codename: Duets</a>
-                </h2>
-                <h2>
-                <a href="#Regras">Regras do Jogo</a>
-                </h2>
-            </nav>
+        <div class="container">
+            <header>
+                <h1>Navegação</h1>
+                <nav>
+                    <h2>
+                    <a href="#Integrantes">Integrantes</a>
+                    </h2>
+                    <h2>
+                    <a href="#DescProjeto">Descrição do Projeto</a>
+                    </h2>
+                    <h2>
+                    <a href="#Duets">O Jogo Codename: Duets</a>
+                    </h2>
+                    <h2>
+                    <a href="#Regras">Regras do Jogo</a>
+                    </h2>
+                </nav>
+            </header>
 
-        </header>
-        <aside>
+            <main>
+                <div class="content">
+                    <section>
+                        <h1 id="DescProjeto">Descrição do Projeto</h1>
+                        <p>
+                            O projeto web (escrita, implementação e apresentação) deverá ser organizado em grupo de dois (2) discentes. Este projeto envolverá os principais
+                            conceitos e técnicas abordados na disciplina. A parte escrita do projeto será em formato de artigo em LATEX, conforme template disponibilizado. 
+                            A apresentação (website  HTML/CSS/JS/framework online) deverá contemplar aspectos téoricos (de forma sucinta) e focar principalmente em aspectos 
+                            de implementação (aplicação) e de monstração/resultados. O agente de usuário padrão adotado na disciplina será o Firefox. 
+                            Entretanto, recomenda-se que seja verificada a compatibilidade das implementações no Chrome.
+                        </p>
+                    </section>
+                    
+                    <section>
+                        <h1 id="Duets">O Jogo Codename: Duets</h1>
+                        <p>
+                            Codenames Duet mantém os elementos básicos do Codenames - dê pistas de uma palavra para tentar conseguir que alguém 
+                            identifique seus agentes entre os que estão na mesa - mas agora você está trabalhando em equipe para encontrar todos os seus agentes.
+                            (Por que você ainda não sabe quem são os seus agentes é uma pergunta que os investigadores do Congresso terão em suas costas mais tarde!)
+                        </p>
+                    </section>
 
-            <h1>Navegação</h1>
-            <nav>
-                <ul>
-                    <li>
-                        <a href="https://github.com/andersonzambeli/ine_5646_CodeNames-Duet">HomePage</a>
-                    </li>
-                    <li>
-                        <a href="https://github.com/andersonzambeli/ine_5646_CodeNames-Duet">GitHub do Projeto</a>
-                    </li>
-                    <li>
-                        <a href="https://github.com/andersonzambeli/ine_5646_CodeNames-Duet">DOM do Projeto</a>
-                    </li>
-                </ul>
-            </nav>
+                    <section>
+                        <h1 id="Regras">Regras do jogo</h1>
+                        <p>
+                            Colocam-se 25 palavras na mesa num gradil 5 x 5. Separam-se os marcadores de tempo de acordo com a missão escolhida.
+                            Os jogadores posicionam uma carta-chave no apoio, separam os marcadores de agentes e assassino e a partida está pronta para começar.<br>
+                            Cada jogador tem acesso a um lado da carta-chave, que indica quais palavras o outro jogador deve adivinhar, e para isso o jogador vai dar pistas para o outro usando apenas UMA palavra e UM número,
+                            sendo que esse número corresponde à quantidade de palavras que o outro jogador consegue adivinhar com essa pista 
+                            (Por exemplo, se eu disser: Fruta 2, significa que com a pista fruta o outro jogador consegue adivinhar até 2 palavras).<br>
+                            Existem três possibilidades de resultado quando um jogador escolhe uma palavra: Descobrir um agente (marcações verdes na carta-chave), 
+                            acertar um civil (marcação cinza) e acertar o assassino (marcação preta). Ao descobrir um agente você obteve sucesso. 
+                            Ao acertar um civil o turno se encerra mas a partida prossegue, sendo que agora o outro jogador que fornecerá pistas para você, 
+                            pois a carta-chave possui informações de ambos os lados, sendo que cada lado fica visível para apenas um jogador.
+                            Já ao acertar o assassino a partida encerra-se imediatamente e vocês perdem, sendo assim o assassino deve ser evitado à todo custo.<br>
+                            Essa versão do jogo vem com marcadores de tempo e civis para ser usado, pois cada missão do mapa possui uma quantidade 
+                            de turnos permitidos para os jogadores descobrirem todas as palavras e também quantidade de erros permitidos.<br>
+                            Ao exceder o número de erros permitidos cada erro adicional custará 2 turnos aos jogadores.<br>
+                            A partida é vencida quando ambos os lados descobrirem todas as palavras indicadas pela carta-chave antes dos turnos indicados na missão terminarem.           
+                        </p>
+                        <p>
+                            <i>Fonte: <a href="https://jogandomais.com.br/2019/05/23/descubra-agentes-codigo-secreto-dueto/">Jogando Mais</a></i>                
+                        </p>
+                        
+                        <p>Video de demonstração do jogo em inglês.</p>
+                        <iframe src="https://www.youtube.com/embed/siaNZYg3MhY" width="600" height="400">
+                        </iframe>
+                    </section>
+                </div>
 
-               
-            
+                <aside>
+                    <h1>Navegação</h1>
+                    <nav>
+                        <ul>
+                            <li>
+                                <a href="https://github.com/andersonzambeli/ine_5646_CodeNames-Duet">HomePage</a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/andersonzambeli/ine_5646_CodeNames-Duet">GitHub do Projeto</a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/andersonzambeli/ine_5646_CodeNames-Duet">DOM do Projeto</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </aside>
+            </main>
 
-        </aside>
+            <address id="info">
+                <h1>Informações do Projeto</h1>
+                <h2 id="Integrantes">Grupo 5 - Integrantes:</h2>
+                <p>Anderson Sales Zambeli<br>
+                   Email <a href="mailto:andersonszambeli@gmail.com">andersonszambeli@gmail.com</a>
+                </p>
 
-        <section>
-            <h1 id="DescProjeto">Descrição do Projeto</h1>
-            <p>
-                O projeto web (escrita, implementação e apresentação) deverá ser organizado em grupo de dois (2) discentes. Este projeto envolverá os principais
-                conceitos e técnicas abordados na disciplina. A parte escrita do projeto será em formato de artigo em LATEX, conforme template disponibilizado. 
-                A apresentação (website  HTML/CSS/JS/framework online) deverá contemplar aspectos téoricos (de forma sucinta) e focar principalmente em aspectos 
-                de implementação (aplicação) e de monstração/resultados. O agente de usuário padrão adotado na disciplina será o Firefox. 
-                Entretanto, recomenda-se que seja verificada a compatibilidade das implementações no Chrome.
-            </p>
-            
-        </section>
-        <section>
-            <h1 id="Duets">O Jogo Codename: Duets</h1>
-            <p>
-                Codenames Duet mantém os elementos básicos do Codenames - dê pistas de uma palavra para tentar conseguir que alguém 
-                identifique seus agentes entre os que estão na mesa - mas agora você está trabalhando em equipe para encontrar todos os seus agentes.
-                (Por que você ainda não sabe quem são os seus agentes é uma pergunta que os investigadores do Congresso terão em suas costas mais tarde!)
-            </p>
-        </section>
-
-        <section>
-            <h1 id="Regras">Regras do jogo</h1>
-            <p>
-                Colocam-se 25 palavras na mesa num gradil 5 x 5. Separam-se os marcadores de tempo de acordo com a missão escolhida.
-                Os jogadores posicionam uma carta-chave no apoio, separam os marcadores de agentes e assassino e a partida está pronta para começar.<br>
-                Cada jogador tem acesso a um lado da carta-chave, que indica quais palavras o outro jogador deve adivinhar, e para isso o jogador vai dar pistas para o outro usando apenas UMA palavra e UM número,
-                sendo que esse número corresponde à quantidade de palavras que o outro jogador consegue adivinhar com essa pista 
-                (Por exemplo, se eu disser: Fruta 2, significa que com a pista fruta o outro jogador consegue adivinhar até 2 palavras).<br>
-                Existem três possibilidades de resultado quando um jogador escolhe uma palavra: Descobrir um agente (marcações verdes na carta-chave), 
-                acertar um civil (marcação cinza) e acertar o assassino (marcação preta). Ao descobrir um agente você obteve sucesso. 
-                Ao acertar um civil o turno se encerra mas a partida prossegue, sendo que agora o outro jogador que fornecerá pistas para você, 
-                pois a carta-chave possui informações de ambos os lados, sendo que cada lado fica visível para apenas um jogador.
-                Já ao acertar o assassino a partida encerra-se imediatamente e vocês perdem, sendo assim o assassino deve ser evitado à todo custo.<br>
-                Essa versão do jogo vem com marcadores de tempo e civis para ser usado, pois cada missão do mapa possui uma quantidade 
-                de turnos permitidos para os jogadores descobrirem todas as palavras e também quantidade de erros permitidos.<br>
-                Ao exceder o número de erros permitidos cada erro adicional custará 2 turnos aos jogadores.<br>
-                A partida é vencida quando ambos os lados descobrirem todas as palavras indicadas pela carta-chave antes dos turnos indicados na missão terminarem.           
-            </p>
-            <p>
-                <i>Fonte: <a href="https://jogandomais.com.br/2019/05/23/descubra-agentes-codigo-secreto-dueto/">Jogando Mais</a></i>                
-            </p>
-            
-            <p>Video de demonstração do jogo em inglês.</p>
-            <iframe src="https://www.youtube.com/embed/siaNZYg3MhY" width="600" height="400">
-            </iframe>
-        </section>
-
-        <address id="info">
-            <h1>Informações do Projeto</h1>
-            <h2 id="Integrantes">Grupo 5 - Integrantes:</h2>
-            <p>Anderson Sales Zambeli<br>
-               Email <a>andersonszambeli@gmail.com</a>
-            </p>
-
-            <p>Vinícius de Paola Barbieri<br>
-             Email <a> <!--  --></a></p>
-            <h2>Disciplina</h2> 
-            <p><a href="https://presencial.moodle.ufsc.br/course/view.php?id=32192&section=0">Disciplina de Progamação Web, turma A</a></br>
-            Professor Wyllian Bezerra da Silva<br>
-            Departamento de Informática e Estatística - INE</p>
-        </address>
+                <p>Vinícius de Paola Barbieri<br>
+                 Email <a href="mailto:vinibarbieri.dev@gmail.com">vinibarbieri.dev@gmail.com</a></p>
+                <h2>Disciplina</h2> 
+                <p><a href="https://presencial.moodle.ufsc.br/course/view.php?id=32192&section=0">Disciplina de Progamação Web, turma A</a></br>
+                Professor Wyllian Bezerra da Silva<br>
+                Departamento de Informática e Estatística - INE</p>
+            </address>
+        </div>
     </body>
-
-
-
 </html>

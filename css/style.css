@@ -1,1 +1,193 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header */
+header {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    color: #4a5568;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 700;
+}
+
+header nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+}
+
+header nav a {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+header nav a:hover {
+    transform: translateY(-2px);
+}
+
+/* Layout principal */
+main {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+/* Aside */
+aside {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 25px;
+    height: fit-content;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+aside h1 {
+    color: #4a5568;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 600;
+}
+
+aside nav a {
+    color: #667eea;
+    display: block;
+    padding: 12px 16px;
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    border-left: 4px solid #667eea;
+    margin-bottom: 15px;
+}
+
+aside nav a:hover {
+    background: rgba(102, 126, 234, 0.2);
+    transform: translateX(5px);
+}
+
+/* Seções */
+section {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+section h1 {
+    color: #4a5568;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    font-weight: 700;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 10px;
+}
+
+section p {
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+    color: #4a5568;
+    text-align: justify;
+}
+
+/* Iframe */
+iframe {
+    width: 100%;
+    max-width: 600px;
+    height: 400px;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    margin: 20px 0;
+}
+
+/* Address */
+address {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+address h1 {
+    color: #4a5568;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    font-weight: 700;
+    text-align: center;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 10px;
+}
+
+address h2 {
+    color: #667eea;
+    font-size: 1.5rem;
+    margin: 25px 0 15px 0;
+    font-weight: 600;
+}
+
+address p {
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    color: #4a5568;
+}
+
+/* Links */
+a {
+    color: #667eea;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #764ba2;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .container { padding: 15px; }
+    main { grid-template-columns: 1fr; gap: 20px; }
+    header nav { flex-direction: column; align-items: center; }
+    header nav a { width: 100%; max-width: 300px; text-align: center; }
+    section, aside, address { padding: 20px; }
+    iframe { height: 300px; }
+}
+
+@media (max-width: 480px) {
+    header h1, section h1, address h1 { font-size: 1.5rem; }
+    section p, address p { font-size: 1rem; }
+    iframe { height: 250px; }
+}
