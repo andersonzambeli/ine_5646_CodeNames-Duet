@@ -201,6 +201,13 @@ a:hover {
     color: #764ba2;
 }
 
+.content img {
+        width: 100%;
+        height: auto;
+        display: block;
+        object-fit: scale-down;
+    }
+
 /* Responsividade */
 @media (max-width: 768px) {
     .container { padding: 15px; }
