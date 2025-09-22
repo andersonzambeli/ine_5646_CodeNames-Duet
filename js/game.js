@@ -36,7 +36,7 @@ class Game {
         
         // Bind methods to preserve context
         this.handleBoardClick = this.handleBoardClick.bind(this);
-        this.handleDicaSubmit = this.handleDicaSubmit.bind(this);
+        this.handleEnviarDica = this.handleEnviarDica.bind(this);
         this.handlePassarVez = this.handlePassarVez.bind(this);
         
         // Inicializar o jogo
@@ -227,16 +227,16 @@ class Game {
      */
     handleBoardClick(event) {
         const clickedElement = event.target.closest(".board-item");
-        const wordElement = clickedElement.querySelector('.palavra_item');
-        const wordText = wordElement.textContent;
+        const palavraElement = clickedElement.querySelector('.palavra_element');
+        const textoDaPalavra = palavraElement.textContent;
         
-        const selectedWord = this.selectedWords.find(obj => obj.palavra === wordText);
-        console.log('Palavra selecionada:', selectedWord);
+        const palavraSelecionada = this.palavrasSelecionadas.find(obj => obj.palavra === textoDaPalavra);
+        console.log('Palavra selecionada:', palavraSelecionada);
         
         if (this.estado === 3) {
-            this.handleJogadorAdivinhar(clickedElement, selectedWord);
+            this.handleJogadorAdivinhar(clickedElement, palavraSelecionada);
         } else if (this.estado === 1) {
-            this.handleParceiroAdivinhar(clickedElement, selectedWord);
+            this.handleParceiroAdivinhar(clickedElement, palavraSelecionada);
         }
     }
 

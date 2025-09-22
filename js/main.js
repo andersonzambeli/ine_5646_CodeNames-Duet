@@ -32,12 +32,12 @@ function inicializarJogo() {
         uiManager = new UIManager(game);
 
         // Adiciona os métodos do bot ao jogo para fácil acesso
-        game.botAdivinhar = () => bot.adivinhar();
-        game.botGerarDica = () => bot.gerarDica();
+        game.botAdivinhar = (botLevel) => bot.adivinhar(botLevel);
+        game.botGerarDica = (botLevel) => bot.gerarDica(botLevel);
 
         // Inicia o jogo
         console.log('Iniciando jogo...');
-        game.advanceToNextState();
+        game.avancarParaProximoEstado();
         
         console.log("Jogo inicializado com sucesso!");
     } catch (error) {
@@ -60,8 +60,8 @@ function restartGame() {
         uiManager = new UIManager(game);
         
         // Adiciona os métodos do bot ao jogo
-        game.botAdivinhar = () => bot.adivinhar();
-        game.botGerarDica = () => bot.gerarDica();
+        game.botAdivinhar = (botLevel) => bot.adivinhar(botLevel);
+        game.botGerarDica = (botLevel) => bot.gerarDica(botLevel);
         
         // Inicia o novo jogo
         game.avancarParaProximoEstado();

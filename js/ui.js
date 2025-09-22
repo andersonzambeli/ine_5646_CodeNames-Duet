@@ -23,7 +23,7 @@ class UIManager {
     iniciaDicaSubmitListener() {
         const clueButton = document.getElementsByClassName("botao_enviar_dica");
         if (clueButton[0]) {
-            clueButton[0].addEventListener("click", this.game.handleClueSubmit);
+            clueButton[0].addEventListener("click", this.game.handleEnviarDica);
         }
     }
 
@@ -33,7 +33,7 @@ class UIManager {
     iniciaPassarVezListener() {
         const passButton = document.getElementsByClassName("botao_passar_vez");
         if (passButton[0]) {
-            passButton[0].addEventListener("click", this.game.handlePassTurn);
+            passButton[0].addEventListener("click", this.game.handlePassarVez);
         }
     }
 
