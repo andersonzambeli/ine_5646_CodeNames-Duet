@@ -19,7 +19,7 @@ class Game {
         // Rastreamento do progresso do jogo
         this.jogadorEncontrouTodos = false;
         this.parceiroEncontrouTodos = false;
-        this.dicaAtual = { word: '', number: 0 };
+        this.dicaAtual = { word: '', numero: 0 };
         this.jogosAnteriores = 0;
         
         // Listas de palavras
@@ -169,14 +169,14 @@ class Game {
      * Verificar se uma palavra é uma das palavras alvo do parceiro
      */
     isPalavraAlvoDoParceiro(position) {
-        return this.palavrasDoParceiro.some(obj => obj.pos === position);
+        return this.palavrasDoJogador.some(obj => obj.pos === position);
     }
 
     /**
      * Verificar se uma palavra é uma das palavras alvo do jogador
      */
     isPalavraAlvoDoJogador(position) {
-        return this.palavrasDoJogador.some(obj => obj.pos === position);
+        return this.palavrasDoParceiro.some(obj => obj.pos === position);
     }
 
     /**
@@ -200,6 +200,9 @@ class Game {
         switch(this.estado) {
             case 0:
                 infoJogador.textContent = "Jogador 1 está digitando a dica.";
+                // for(const button of boardButtons) {
+                //     button.disabled = true;
+                // }
                 break;
             case 1:
                 infoJogador.textContent = "Jogador 2 está adivinhando.";
@@ -251,19 +254,22 @@ class Game {
             alert("Você selecionou o Assassino e por isso vocês perderam o jogo!!!");
             statusElement.textContent = "ASSASSINO";
         } else {
-            const isPalavraAlvo = this.isPalavraAlvoDoParceiro(palavraSelecionada.pos);
+            const isPalavraAlvo = this.isPalavraAlvoDoJogador(palavraSelecionada.pos);
             
             if (isPalavraAlvo) {
-                statusElement.textContent = "AGENTE";
+                statusElement.textContent = "Parceiro: AGENTE";
                 this.palavrasEncontradasDoParceiro.push(palavraSelecionada);
-                this.palavrasClicadasDoParceiro.push(palavraSelecionada);
+                this.palavrasClicadasDoJogador.push(palavraSelecionada);
                 this.verificarVitoria();
             } else {
-                statusElement.textContent = "CIVIL";
-                this.palavrasClicadasDoParceiro.push(palavraSelecionada);
+                statusElement.textContent = "Parceiro: CIVIL";
+                this.palavrasClicadasDoJogador.push(palavraSelecionada);
                 this.avancarParaProximoEstado();
             }
+            
         }
+        console.log(`Palavras que o jogador ainda precisa encontrar`, this.palavrasDoParceiro.filter(item => 
+            !this.palavrasEncontradasDoParceiro.includes(item)))
     }
 
     /**
@@ -277,19 +283,22 @@ class Game {
             alert("O parceiro selecionou o Assassino e por isso vocês perderam o jogo!!!");
             statusElement.textContent = "ASSASSINO";
         } else {
-            const isPalavraAlvo = this.isPalavraAlvoDoJogador(palavraSelecionada.pos);
+            const isPalavraAlvo = this.isPalavraAlvoDoParceiro(palavraSelecionada.pos);
             
             if (isPalavraAlvo) {
-                statusElement.textContent = "AGENTE";
+                statusElement.textContent = "Jogado: AGENTE";
                 this.palavrasEncontradasDoJogador.push(palavraSelecionada);
-                this.palavrasClicadasDoJogador.push(palavraSelecionada);
+                this.palavrasClicadasDoParceiro.push(palavraSelecionada);
                 this.verificarVitoria();
             } else {
-                statusElement.textContent = "CIVIL";
-                this.palavrasClicadasDoJogador.push(palavraSelecionada);
+                statusElement.textContent = "Jogador: CIVIL";
+                this.palavrasClicadasDoParceiro.push(palavraSelecionada);
                 this.avancarParaProximoEstado();
             }
         }
+
+        console.log(`Palavras que o bot ainda precisa encontrar ` , this.palavrasDoJogador.filter(item => 
+            !this.palavrasEncontradasDoJogador.includes(item)))
     }
 
     /**
@@ -311,8 +320,12 @@ class Game {
         
         const numeroDoJogador = this.estado === 0 ? 1 : 2;
         this.atualizarHistoricoDeDicas(numeroDoJogador, palavra, numero);
+
+        inputPalavra.value=""
+        inputNumero.value=""
         
         this.avancarParaProximoEstado();
+
     }
 
     /**
@@ -347,12 +360,12 @@ class Game {
         this.palavrasSelecionadas = this.selecionarPalavrasAleatorias(this.bancoDePalavras, 25);
         
         // Selecionar as palavras do jogador (7 alvo + 1 assassino)
-        this.palavrasDoJogador = this.selecionarPalavrasAleatorias(this.palavrasSelecionadas, 7);
-        this.palavrasAssassinasDoJogador = this.selecionarPalavrasAleatorias(this.palavrasSelecionadas, 1);
+        this.palavrasDoJogador = this.selecionarPalavrasAgentes(this.palavrasSelecionadas, 7);
+        this.palavrasAssassinasDoJogador = this.selecionarPalavrasAssassinas(this.palavrasSelecionadas, this.palavrasDoJogador, 1);
         
         // Selecionar as palavras do parceiro (7 alvo + 1 assassino)
-        this.palavrasDoParceiro = this.selecionarPalavrasAleatorias(this.palavrasSelecionadas, 7);
-        this.palavrasAssassinasDoParceiro = this.selecionarPalavrasAleatorias(this.palavrasSelecionadas, 1);
+        this.palavrasDoParceiro = this.selecionarPalavrasAgentes(this.palavrasSelecionadas, 7);
+        this.palavrasAssassinasDoParceiro = this.selecionarPalavrasAssassinas(this.palavrasSelecionadas, this.palavrasDoParceiro, 1);
         
         console.log("Palavras selecionadas:", this.palavrasSelecionadas);
         console.log("Palavras do jogador:", this.palavrasDoJogador);
@@ -372,14 +385,58 @@ class Game {
         
         for (let i = 0; i < count; i++) {
             const indexAleatorio = Math.floor(Math.random() * palavrasDisponiveis.length);
-            const palavraSelecionada = palavrasDisponiveis[indexAleatorio];
-            palavraSelecionada.pos = selecionada.length; // Atribuir posição
+            
+            // Faz uma cópia da palavra (se for string ou objeto)
+            const palavraSelecionada = 
+                typeof palavrasDisponiveis[indexAleatorio] === "string"
+                    ? { palavra: palavrasDisponiveis[indexAleatorio], pos: i }
+                    : { ...palavrasDisponiveis[indexAleatorio], pos: i };
+
             selecionada.push(palavraSelecionada);
             palavrasDisponiveis.splice(indexAleatorio, 1);
         }
         
         return selecionada;
     }
+
+    selecionarPalavrasAgentes(listaDePalavras, count) {
+        const selecionada = [];
+        const palavrasDisponiveis = [...listaDePalavras];
+        
+        for (let i = 0; i < count; i++) {
+            const indexAleatorio = Math.floor(Math.random() * palavrasDisponiveis.length);
+            
+            // Faz uma cópia da palavra (se for string ou objeto)
+            const palavraSelecionada = palavrasDisponiveis[indexAleatorio]
+               
+
+            selecionada.push(palavraSelecionada);
+            palavrasDisponiveis.splice(indexAleatorio, 1);
+        }
+        
+        return selecionada;
+    }
+
+    selecionarPalavrasAssassinas(listaDePalavrasTotal, listaDePalavrasSelecionadas,  count) {
+        const selecionada = [];
+        const palavrasDisponiveis = listaDePalavrasTotal.filter(item => ! listaDePalavrasSelecionadas.some(remover => remover["pos"] === item["pos"]))
+        for (let i = 0; i < count; i++) {
+            const indexAleatorio = Math.floor(Math.random() * palavrasDisponiveis.length);
+            
+            // Faz uma cópia da palavra (se for string ou objeto)
+            const palavraSelecionada = palavrasDisponiveis[indexAleatorio]
+               
+
+            selecionada.push(palavraSelecionada);
+            palavrasDisponiveis.splice(indexAleatorio, 1);
+        }
+        
+        return selecionada;
+    }
+
+
+
+
 
     /**
      * Criar elementos HTML para o tabuleiro
@@ -401,15 +458,19 @@ class Game {
             
             // Exibição do status do jogador
             const jogadorStatusElement = document.createElement("p");
-            jogadorStatusElement.textContent = "?";
+            jogadorStatusElement.textContent = "Jogador: ?";
             jogadorStatusElement.setAttribute("class", "palavra_item_jogador_acertado");
             item.append(jogadorStatusElement);
             
             // Exibição do status do parceiro
             const parceiroStatusElement = document.createElement("p");
             parceiroStatusElement.setAttribute("class", "palavra_item_bot_acertado");
-            parceiroStatusElement.textContent = "?";
+            parceiroStatusElement.textContent = "Parceiro ?";
             item.append(parceiroStatusElement);
+
+            if(this.isPalavraAlvoDoParceiro(this.palavrasSelecionadas[i].pos)){
+                item.setAttribute('style', 'background-color : green')
+            }
             
             item.addEventListener('click', this.handleBoardClick);
             this.parent.append(item);

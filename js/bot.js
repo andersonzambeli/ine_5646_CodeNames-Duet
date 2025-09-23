@@ -16,12 +16,12 @@ class Bot {
       console.log(`Bot iniciando adivinhação com nível: ${botLevel}`);
       let palavrasRestantes = [];
 
-      if (botLevel === 1) {
-            palavrasRestantes = this.getPalavrasRestantesDoParceiro();
-            console.log("Palavras que o bot pode adivinhar (nível difícil):", palavrasRestantes);
+      if (botLevel === 0) {
+            palavrasRestantes = this.getPalavrasRestantesDoJogador();
+            console.log("Palavras que o bot pode adivinhar (nível facil):", palavrasRestantes);
       } else {
             palavrasRestantes = this.getPalavrasRestantes();
-            console.log("Palavras que o bot pode adivinhar (nível fácil):", palavrasRestantes);
+            console.log("Palavras que o bot pode adivinhar (nível dificil):", palavrasRestantes);
       }
       
       // Usar lógica inteligente baseada na dica atual
@@ -43,7 +43,7 @@ class Bot {
      * @param {Array} palavrasRestantes - Array de palavras restantes
      * @returns {Array} - Array de palavras selecionadas inteligentemente
      */
-    selecionarPalavrasInteligentes(palavrasRestantes) {
+    selecionarPalavrasInteligentes(palavrasRestantes, botLevel) {
         const dicaAtual = this.game.dicaAtual;
         console.log("Dica atual para análise:", dicaAtual);
         
@@ -94,15 +94,15 @@ class Bot {
                         razao = `associação exata: "${associada}"`;
                     }
                     // Verificação de inclusão (pontuação média)
-                    else if (associadaLower.includes(dicaLower) || dicaLower.includes(associadaLower)) {
-                        pontuacao += 5;
-                        razao = `associação parcial: "${associada}"`;
-                    }
-                    // Verificação de palavras similares (pontuação baixa)
-                    else if (this.saoPalavrasSimilares(associadaLower, dicaLower)) {
-                        pontuacao += 3;
-                        razao = `associação similar: "${associada}"`;
-                    }
+                    // else if (associadaLower.includes(dicaLower) || dicaLower.includes(associadaLower)) {
+                    //     pontuacao += 5;
+                    //     razao = `associação parcial: "${associada}"`;
+                    // }
+                    // // Verificação de palavras similares (pontuação baixa)
+                    // else if (this.saoPalavrasSimilares(associadaLower, dicaLower)) {
+                    //     pontuacao += 3;
+                    //     razao = `associação similar: "${associada}"`;
+                    // }
                 }
             }
             
@@ -111,13 +111,14 @@ class Bot {
             if (palavraLower === dicaLower) {
                 pontuacao += 10;
                 razao = "palavra exata";
-            } else if (palavraLower.includes(dicaLower) || dicaLower.includes(palavraLower)) {
-                pontuacao += 5;
-                razao = "similaridade direta";
-            } else if (this.saoPalavrasSimilares(palavra.palavra.toLowerCase(), dicaLower)) {
-                pontuacao += 3;
-                razao = "similaridade parcial";
             }
+            // } else if (palavraLower.includes(dicaLower) || dicaLower.includes(palavraLower)) {
+            //     pontuacao += 5;
+            //     razao = "similaridade direta";
+            // } else if (this.saoPalavrasSimilares(palavra.palavra.toLowerCase(), dicaLower)) {
+            //     pontuacao += 3;
+            //     razao = "similaridade parcial";
+            // }
             
             // Se tem pontuação, adicionar à lista
             if (pontuacao > 0) {
@@ -164,6 +165,7 @@ class Bot {
             setTimeout(() => {
                 this.game.avancarParaProximoEstado();
             }, 2000);
+            
             return;
         }
 
@@ -176,6 +178,12 @@ class Bot {
         if (elementToClick) {
             console.log(`Bot clicando na palavra: ${palavraAtual.palavra} (posição real: ${posicaoBoard})`);
             elementToClick.click();
+            console.log("bot clicou")
+            console.log(this.game.palavrasDoJogador)
+
+            if(!this.game.palavrasDoJogador.includes(obj => obj.pos == palavraAtual.pos)){
+                return
+            }
             
             // Aguardar um tempo antes de clicar na próxima palavra
             setTimeout(() => {
@@ -215,11 +223,11 @@ class Bot {
                 this.game.avancarParaProximoEstado();
         } else {
             let palavrasRestantes = [];
-            if (botLevel === 1) {
-                palavrasRestantes = this.getPalavrasRestantesDoParceiro();
+            if (botLevel === 0) {
+                palavrasRestantes = this.getPalavrasAlvoDoJogadorRestantes();
             } else {
                 // TODO: Implementar gerar dica do nivel fácil
-                palavrasRestantes = this.getPalavrasRestantesDoParceiro();
+                palavrasRestantes = this.getPalavrasAlvoDoJogadorRestantes();
             }
 
             // Gerar dica inteligente baseada nas palavras restantes
@@ -316,7 +324,7 @@ class Bot {
      */
     getPalavrasRestantes() {
         return this.game.palavrasSelecionadas.filter(item => 
-            !this.game.palavrasClicadasDoJogador.includes(item)
+            !this.game.palavrasClicadasDoParceiro.includes(item)
         );
     }
 
@@ -325,8 +333,8 @@ class Bot {
      * @returns {Array} - Array de palavras alvo restantes
      */
     getPalavrasAlvoDoJogadorRestantes() {
-        return this.game.palavrasDoJogador.filter(item => 
-            !this.game.palavrasEncontradasDoJogador.includes(item)
+        return this.game.palavrasDoParceiro.filter(item => 
+            !this.game.palavrasEncontradasDoParceiro.includes(item)
         );
     }
 
@@ -334,9 +342,9 @@ class Bot {
      * @description Pega as palavras restantes do parceiro
      * @returns {Array} - Array de palavras restantes do parceiro
      */
-    getPalavrasRestantesDoParceiro() {
-        return this.game.palavrasDoParceiro.filter(item => 
-            !this.game.palavrasEncontradasDoParceiro.includes(item)
+    getPalavrasRestantesDoJogador() {
+        return this.game.palavrasDoJogador.filter(item => 
+            !this.game.palavrasEncontradasDoJogador.includes(item)
         );
     }
 
