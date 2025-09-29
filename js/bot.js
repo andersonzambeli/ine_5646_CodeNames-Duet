@@ -181,9 +181,15 @@ class Bot {
             console.log("bot clicou")
             console.log(this.game.palavrasDoJogador)
 
-            if(!this.game.palavrasDoJogador.includes(obj => obj.pos == palavraAtual.pos)){
-                return
+            // Verificar se a palavra clicada é do jogador
+            const isPalavraDoJogador = this.game.palavrasDoJogador.some(obj => obj.pos === palavraAtual.pos);
+            
+            if (!isPalavraDoJogador) {
+                console.log("Bot clicou em palavra que não é do jogador, perdendo a vez");
+                return; // Para de clicar nas palavras restantes
             }
+            
+            console.log("Bot acertou! Continuando para próxima palavra");
             
             // Aguardar um tempo antes de clicar na próxima palavra
             setTimeout(() => {
