@@ -11,7 +11,7 @@ class Game {
         
         // Configuração do jogo
         this.tipoDeJogo = 0; // 0 - vs bot, 1 - vs player
-        this.botLevel = 1; // 0 - fácil, 1 - difícil
+        this.botLevel = 0; // 0 - fácil, 1 - difícil
         
         // Elementos DOM
         this.parent = parentElement;
@@ -21,6 +21,9 @@ class Game {
         this.parceiroEncontrouTodos = false;
         this.dicaAtual = { word: '', numero: 0 };
         this.jogosAnteriores = 0;
+        this.game_finalizado = false
+        this.vitoria = false
+        this.derrota = false
         
         // Listas de palavras
         this.bancoDePalavras = this.inicializaBancoDePalavras();
@@ -33,6 +36,7 @@ class Game {
         this.palavrasAssassinasDoParceiro = [];
         this.palavrasClicadasDoParceiro = [];
         this.palavrasEncontradasDoParceiro = [];
+
         
         // Bind methods to preserve context
         this.handleBoardClick = this.handleBoardClick.bind(this);
@@ -194,35 +198,90 @@ class Game {
      */
     atualizarUIParaEstadoAtual() {
         const infoJogador = document.querySelector("div.info_jogador h1");
-        const boardButtons = this.parent.getElementsByClassName("board-item");
-        const botaoEnviarDica = document.getElementsByClassName("botao_enviar_dica");
+        const boardButtons = this.parent.getElementsByClassName("board-item");        
+        if(this.game_finalizado == true){ 
+
+            this.game_finalizar() 
+
+        } else {
         
-        switch(this.estado) {
-            case 0:
-                infoJogador.textContent = "Jogador 1 está digitando a dica.";
-                // for(const button of boardButtons) {
-                //     button.disabled = true;
-                // }
-                break;
-            case 1:
-                infoJogador.textContent = "Jogador 2 está adivinhando.";
-                if (this.botAdivinhar) {
-                    this.botAdivinhar(this.botLevel);
-                }
-                break;
-            case 2:
-                infoJogador.textContent = "Jogador 2 está digitando a dica.";
-                if (this.botGerarDica) {
-                    this.botGerarDica(this.botLevel);
-                }
-                break;
-            case 3:
-                infoJogador.textContent = "Jogador 1 está adivinhando.";
-                for(const button of boardButtons) {
-                    button.disabled = false;
-                }
-                break;
+            switch(this.estado) {
+                case 0:
+                    if (this.palavrasEncontradasDoJogador.length === 7) {
+                        console.log("Todas as palavras do parceiro foram encontradas, avançando estado");
+                        this.avancarParaProximoEstado();}
+                    else{
+                        infoJogador.textContent = "Jogador 1 está digitando a dica.";
+                    }
+                    // for(const button of boardButtons) {
+                    //     button.disabled = true;
+                    // }
+                    break;
+                case 1:
+                    if (this.palavrasEncontradasDoJogador.length === 7) {
+                        console.log("Todas as palavras do parceiro foram encontradas, avançando estado");
+                        this.avancarParaProximoEstado();
+                    }
+                    else{
+                        infoJogador.textContent = "Jogador 2 está adivinhando.";
+                        if (this.botAdivinhar) {
+                            this.botAdivinhar(this.botLevel);
+                        }
+                    }
+                    break;
+                case 2:
+                    if (this.palavrasEncontradasDoParceiro.length === 7) {
+                        console.log("Todas as palavras do jogador foram encontradas, avançando estado");
+                        this.avancarParaProximoEstado();
+                    }
+                    else{
+                        infoJogador.textContent = "Jogador 2 está digitando a dica.";
+                        if (this.botGerarDica) {
+                            this.botGerarDica(this.botLevel);
+                        }
+                    }
+                    break;
+                case 3:
+                    if (this.palavrasEncontradasDoParceiro.length === 7) {
+                        console.log("Todas as palavras do jogador foram encontradas, avançando estado");
+                        this.avancarParaProximoEstado();
+                    }
+                    else{
+                        infoJogador.textContent = "Jogador 1 está adivinhando.";
+                        
+                    }
+                    break;
+            }
         }
+    }
+
+
+    game_finalizar(){
+        const infoJogador = document.querySelector("div.info_jogador h1");
+        const boardButtons = this.parent.getElementsByClassName("board-item");
+        const botao_passar_vez = document.getElementsByClassName("botao_passar_vez")
+        console.log(botao_passar_vez)
+        const botaoEnviarDica = document.getElementsByClassName("botao_enviar_dica");
+        const historicoDeDicas = document.querySelectorAll("div.historico-dicas pre");
+
+        if(this.vitoria == true){
+            historicoDeDicas[0].textContent += "Vitoria dos jogadores!";
+            infoJogador.textContent = "Vitoria dos jogadores!"
+        }
+
+        if(this.derrota == true){
+            historicoDeDicas[0].textContent += "Derrota dos jogadores!";
+            infoJogador.textContent = "Derrota dos jogadores!"
+        }
+        for(const button of boardButtons) {
+                    button.disabled = true;
+                }
+        botao_passar_vez[0].disabled = true
+        botaoEnviarDica[0].disabled = true
+
+
+
+
     }
 
     /**
@@ -253,6 +312,8 @@ class Game {
         if (isAssassin) {
             alert("Você selecionou o Assassino e por isso vocês perderam o jogo!!!");
             statusElement.textContent = "ASSASSINO";
+            this.derrota = true;
+            this.game_finalizar()
         } else {
             const isPalavraAlvo = this.isPalavraAlvoDoJogador(palavraSelecionada.pos);
             
@@ -282,11 +343,13 @@ class Game {
         if (isAssassin) {
             alert("O parceiro selecionou o Assassino e por isso vocês perderam o jogo!!!");
             statusElement.textContent = "ASSASSINO";
+            this.derrota = true;
+            this.game_finalizar()
         } else {
             const isPalavraAlvo = this.isPalavraAlvoDoParceiro(palavraSelecionada.pos);
             
             if (isPalavraAlvo) {
-                statusElement.textContent = "Jogado: AGENTE";
+                statusElement.textContent = "Jogador: AGENTE";
                 this.palavrasEncontradasDoJogador.push(palavraSelecionada);
                 this.palavrasClicadasDoParceiro.push(palavraSelecionada);
                 this.verificarVitoria();
@@ -348,6 +411,8 @@ class Game {
      */
     verificarVitoria() {
         if (this.palavrasEncontradasDoJogador.length === 7 && this.palavrasEncontradasDoParceiro.length === 7) {
+            this.game_finalizado = true;
+            this.vitoria = true;
             alert("Jogo Vencido!");
         }
     }

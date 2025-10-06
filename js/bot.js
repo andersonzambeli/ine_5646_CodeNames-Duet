@@ -223,34 +223,31 @@ class Bot {
      */
     gerarDica(botLevel) {
         console.log(`Bot iniciando geração de dica com nível: ${botLevel}`);
-        // Passa para o próximo estado se todas as palavras do parceiro forem encontradas
-        if (this.game.palavrasEncontradasDoParceiro.length === 7) {
-                console.log("Todas as palavras do parceiro foram encontradas, avançando estado");
-                this.game.avancarParaProximoEstado();
+        
+        
+        let palavrasRestantes = [];
+        if (botLevel === 0) {
+            palavrasRestantes = this.getPalavrasAlvoDoJogadorRestantes();
         } else {
-            let palavrasRestantes = [];
-            if (botLevel === 0) {
-                palavrasRestantes = this.getPalavrasAlvoDoJogadorRestantes();
-            } else {
-                // TODO: Implementar gerar dica do nivel fácil
-                palavrasRestantes = this.getPalavrasAlvoDoJogadorRestantes();
-            }
-
-            // Gerar dica inteligente baseada nas palavras restantes
-            const dicaInteligente = this.gerarDicaInteligente(palavrasRestantes, botLevel);
-            console.log("Dica inteligente gerada:", dicaInteligente);
-
-            const inputPalavra = document.querySelector(".input_palavra");
-            inputPalavra.value = dicaInteligente.palavra;
-
-            const inputNumero = document.querySelector(".input_numero");
-            inputNumero.value = dicaInteligente.numero;
-
-            const botaoEnviarDica = document.querySelector(".botao_enviar_dica");
-            setTimeout(() => {
-                    botaoEnviarDica.click();
-            }, 3000);
+            // TODO: Implementar gerar dica do nivel fácil
+            palavrasRestantes = this.getPalavrasAlvoDoJogadorRestantes();
         }
+
+        // Gerar dica inteligente baseada nas palavras restantes
+        const dicaInteligente = this.gerarDicaInteligente(palavrasRestantes, botLevel);
+        console.log("Dica inteligente gerada:", dicaInteligente);
+
+        const inputPalavra = document.querySelector(".input_palavra");
+        inputPalavra.value = dicaInteligente.palavra;
+
+        const inputNumero = document.querySelector(".input_numero");
+        inputNumero.value = dicaInteligente.numero;
+
+        const botaoEnviarDica = document.querySelector(".botao_enviar_dica");
+        setTimeout(() => {
+                botaoEnviarDica.click();
+        }, 3000);
+    
     }
 
     /**
