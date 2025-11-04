@@ -197,8 +197,17 @@ class Game {
      * Atualizar os elementos da interface baseado no estado atual
      */
     atualizarUIParaEstadoAtual() {
-        const infoJogador = document.querySelector("div.info_jogador h1");
-        const boardButtons = this.parent.getElementsByClassName("board-item");        
+        const infoJogador = document.getElementById("status-jogador") || document.querySelector("div.info_jogador h1");
+        const boardButtons = this.parent.getElementsByClassName("board-item");
+        
+        // Atualiza progresso sempre que a UI é atualizada
+        if (this.uiManager && this.uiManager.atualizarProgresso) {
+            this.uiManager.atualizarProgresso(
+                this.palavrasEncontradasDoJogador.length,
+                this.palavrasEncontradasDoParceiro.length
+            );
+        }
+        
         if(this.game_finalizado == true){ 
 
             this.game_finalizar() 
@@ -211,7 +220,7 @@ class Game {
                         console.log("Todas as palavras do parceiro foram encontradas, avançando estado");
                         this.avancarParaProximoEstado();}
                     else{
-                        infoJogador.textContent = "Jogador 1 está digitando a dica.";
+                        if (infoJogador) infoJogador.textContent = "Jogador 1 está digitando a dica.";
                     }
                     // for(const button of boardButtons) {
                     //     button.disabled = true;
@@ -223,7 +232,7 @@ class Game {
                         this.avancarParaProximoEstado();
                     }
                     else{
-                        infoJogador.textContent = "Jogador 2 está adivinhando.";
+                        if (infoJogador) infoJogador.textContent = "Jogador 2 está adivinhando.";
                         if (this.botAdivinhar) {
                             this.botAdivinhar(this.botLevel);
                         }
@@ -235,7 +244,7 @@ class Game {
                         this.avancarParaProximoEstado();
                     }
                     else{
-                        infoJogador.textContent = "Jogador 2 está digitando a dica.";
+                        if (infoJogador) infoJogador.textContent = "Jogador 2 está digitando a dica.";
                         if (this.botGerarDica) {
                             this.botGerarDica(this.botLevel);
                         }
@@ -247,7 +256,7 @@ class Game {
                         this.avancarParaProximoEstado();
                     }
                     else{
-                        infoJogador.textContent = "Jogador 1 está adivinhando.";
+                        if (infoJogador) infoJogador.textContent = "Jogador 1 está adivinhando.";
                         
                     }
                     break;
@@ -257,31 +266,56 @@ class Game {
 
 
     game_finalizar(){
-        const infoJogador = document.querySelector("div.info_jogador h1");
+        const infoJogador = document.getElementById("status-jogador") || document.querySelector("div.info_jogador h1");
         const boardButtons = this.parent.getElementsByClassName("board-item");
-        const botao_passar_vez = document.getElementsByClassName("botao_passar_vez")
-        console.log(botao_passar_vez)
+        const botao_passar_vez = document.getElementsByClassName("botao_passar_vez");
         const botaoEnviarDica = document.getElementsByClassName("botao_enviar_dica");
-        const historicoDeDicas = document.querySelectorAll("div.historico-dicas pre");
+        const historicoContent = document.getElementById("historico-content");
+        const historicoPre = document.querySelector("div.historico-dicas pre");
+
+        // Atualiza progresso final
+        if (this.uiManager && this.uiManager.atualizarProgresso) {
+            this.uiManager.atualizarProgresso(
+                this.palavrasEncontradasDoJogador.length,
+                this.palavrasEncontradasDoParceiro.length
+            );
+        }
 
         if(this.vitoria == true){
-            historicoDeDicas[0].textContent += "Vitoria dos jogadores!";
-            infoJogador.textContent = "Vitoria dos jogadores!"
+            const mensagem = "Vitória dos jogadores!";
+            if (historicoContent) {
+                const historicoItem = document.createElement("div");
+                historicoItem.className = "historico-item";
+                historicoItem.style.background = "linear-gradient(135deg, rgba(72, 187, 120, 0.2), rgba(56, 178, 172, 0.2))";
+                historicoItem.style.borderColor = "#48bb78";
+                historicoItem.innerHTML = `<strong>🎉 ${mensagem}</strong>`;
+                historicoContent.appendChild(historicoItem);
+            } else if (historicoPre) {
+                historicoPre.textContent += mensagem + "\n";
+            }
+            if (infoJogador) infoJogador.textContent = "🎉 " + mensagem;
         }
 
         if(this.derrota == true){
-            historicoDeDicas[0].textContent += "Derrota dos jogadores!";
-            infoJogador.textContent = "Derrota dos jogadores!"
+            const mensagem = "Derrota dos jogadores!";
+            if (historicoContent) {
+                const historicoItem = document.createElement("div");
+                historicoItem.className = "historico-item";
+                historicoItem.style.background = "linear-gradient(135deg, rgba(245, 101, 101, 0.2), rgba(237, 137, 54, 0.2))";
+                historicoItem.style.borderColor = "#f56565";
+                historicoItem.innerHTML = `<strong>😞 ${mensagem}</strong>`;
+                historicoContent.appendChild(historicoItem);
+            } else if (historicoPre) {
+                historicoPre.textContent += mensagem + "\n";
+            }
+            if (infoJogador) infoJogador.textContent = "😞 " + mensagem;
         }
+        
         for(const button of boardButtons) {
-                    button.disabled = true;
-                }
-        botao_passar_vez[0].disabled = true
-        botaoEnviarDica[0].disabled = true
-
-
-
-
+            button.disabled = true;
+        }
+        if (botao_passar_vez[0]) botao_passar_vez[0].disabled = true;
+        if (botaoEnviarDica[0]) botaoEnviarDica[0].disabled = true;
     }
 
     /**
@@ -368,27 +402,49 @@ class Game {
      * Manipular a submissão da dica
      */
     handleEnviarDica(event) {
-        const clickedElement = event.target.closest(".botao_enviar_dica");
-        const parent = clickedElement.parentElement;
+        // Encontra o container do input-dica usando closest para navegar até o card
+        const inputContainer = event.target.closest(".input-dica") || document.getElementById("input");
         
-        const inputPalavra = parent.querySelector(".input_palavra");
-        const palavra = inputPalavra.value;
-        const inputNumero = parent.querySelector(".input_numero");
-        const numero = inputNumero.value;
+        if (!inputContainer) {
+            console.error("Container de input não encontrado!");
+            return;
+        }
+        
+        const inputPalavra = inputContainer.querySelector(".input_palavra") || document.getElementById("input_palavra");
+        const inputNumero = inputContainer.querySelector(".input_numero") || document.getElementById("input_numero");
+        
+        if (!inputPalavra || !inputNumero) {
+            console.error("Inputs não encontrados!");
+            return;
+        }
+        
+        const palavra = inputPalavra.value.trim();
+        const numero = inputNumero.value.trim();
+        
+        // Validação básica
+        if (!palavra || !numero) {
+            alert("Por favor, preencha a palavra e o número antes de enviar a dica.");
+            return;
+        }
+        
+        const numeroInt = parseInt(numero);
+        if (isNaN(numeroInt) || numeroInt < 1 || numeroInt > 25) {
+            alert("Por favor, insira um número válido entre 1 e 25.");
+            return;
+        }
         
         console.log("Dica enviada:", palavra, numero);
         
         this.dicaAtual.palavra = palavra;
-        this.dicaAtual.numero = numero;
+        this.dicaAtual.numero = numeroInt;
         
         const numeroDoJogador = this.estado === 0 ? 1 : 2;
-        this.atualizarHistoricoDeDicas(numeroDoJogador, palavra, numero);
+        this.atualizarHistoricoDeDicas(numeroDoJogador, palavra, numeroInt);
 
-        inputPalavra.value=""
-        inputNumero.value=""
+        inputPalavra.value = "";
+        inputNumero.value = "";
         
         this.avancarParaProximoEstado();
-
     }
 
     /**
@@ -402,8 +458,15 @@ class Game {
      * Atualizar o histórico de dicas
      */
     atualizarHistoricoDeDicas(numeroDoJogador, palavra, numero) {
-        const historicoDeDicas = document.querySelectorAll("div.historico-dicas pre");
-        historicoDeDicas[0].textContent += `Jogador ${numeroDoJogador}: Palavra ${palavra}, Quantidade ${numero}\n`;
+        // Usa o uiManager se disponível, senão usa o método direto
+        if (this.uiManager && this.uiManager.atualizarHistoricoDeDicas) {
+            this.uiManager.atualizarHistoricoDeDicas(numeroDoJogador, palavra, numero);
+        } else {
+            const historicoDeDicas = document.querySelectorAll("div.historico-dicas pre");
+            if (historicoDeDicas[0]) {
+                historicoDeDicas[0].textContent += `Jogador ${numeroDoJogador}: Palavra ${palavra}, Quantidade ${numero}\n`;
+            }
+        }
     }
 
     /**
@@ -534,7 +597,9 @@ class Game {
             item.append(parceiroStatusElement);
 
             if(this.isPalavraAlvoDoParceiro(this.palavrasSelecionadas[i].pos)){
-                item.setAttribute('style', 'background-color : green')
+                item.setAttribute('style', 'background-color: green')
+                // Adiciona classe para garantir estilo consistente
+                item.classList.add('palavra-alvo-parceiro');
             }
             
             item.addEventListener('click', this.handleBoardClick);

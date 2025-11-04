@@ -42,7 +42,7 @@ class UIManager {
      * @param {string} message - Mensagem a ser exibida
      */
     atualizarInfoJogador(message) {
-        const playerInfo = document.querySelector("div.info_jogador h1");
+        const playerInfo = document.getElementById("status-jogador") || document.querySelector("div.info_jogador h1");
         if (playerInfo) {
             playerInfo.textContent = message;
         }
@@ -80,9 +80,24 @@ class UIManager {
      * @param {number} quantidade - Quantidade
      */
     atualizarHistoricoDeDicas(numeroDoJogador, palavra, quantidade) {
-        const historicoDeDicasElements = document.querySelectorAll("div.historico-dicas pre");
-        if (historicoDeDicasElements[0]) {
-            historicoDeDicasElements[0].textContent += `Jogador ${numeroDoJogador}: Palavra ${palavra}, Quantidade ${quantidade}\n`;
+        const historicoContent = document.getElementById("historico-content");
+        const historicoPre = document.querySelector("div.historico-dicas pre");
+        
+        // Remove mensagem de vazio se existir
+        const historicoVazio = document.querySelector(".historico-vazio");
+        if (historicoVazio) {
+            historicoVazio.remove();
+        }
+        
+        // Usa o novo formato se disponível, senão usa o formato antigo
+        if (historicoContent) {
+            const historicoItem = document.createElement("div");
+            historicoItem.className = "historico-item";
+            historicoItem.innerHTML = `<strong>Jogador ${numeroDoJogador}:</strong> "${palavra}" - ${quantidade} palavra${quantidade > 1 ? 's' : ''}`;
+            historicoContent.appendChild(historicoItem);
+            historicoContent.scrollTop = historicoContent.scrollHeight;
+        } else if (historicoPre) {
+            historicoPre.textContent += `Jogador ${numeroDoJogador}: Palavra ${palavra}, Quantidade ${quantidade}\n`;
         }
     }
 
@@ -101,9 +116,38 @@ class UIManager {
      * @description Mostra o estado de carregamento para as ações do bot
      */
     mostrarBotPensando() {
-        const infoJogador = document.querySelector("div.info_jogador h1");
+        const infoJogador = document.getElementById("status-jogador") || document.querySelector("div.info_jogador h1");
         if (infoJogador) {
             infoJogador.textContent = "Bot está pensando...";
+        }
+    }
+
+    /**
+     * @description Atualiza os contadores de progresso
+     * @param {number} jogador1 - Número de palavras encontradas pelo jogador 1
+     * @param {number} jogador2 - Número de palavras encontradas pelo jogador 2
+     */
+    atualizarProgresso(jogador1, jogador2) {
+        const progressoJogador1 = document.getElementById("progresso-jogador1");
+        const progressoJogador2 = document.getElementById("progresso-jogador2");
+        const contadorJogador1 = document.getElementById("contador-jogador1");
+        const contadorJogador2 = document.getElementById("contador-jogador2");
+        
+        const maxPalavras = 7;
+        const porcentagem1 = (jogador1 / maxPalavras) * 100;
+        const porcentagem2 = (jogador2 / maxPalavras) * 100;
+        
+        if (progressoJogador1) {
+            progressoJogador1.style.width = `${porcentagem1}%`;
+        }
+        if (progressoJogador2) {
+            progressoJogador2.style.width = `${porcentagem2}%`;
+        }
+        if (contadorJogador1) {
+            contadorJogador1.textContent = `${jogador1}/${maxPalavras}`;
+        }
+        if (contadorJogador2) {
+            contadorJogador2.textContent = `${jogador2}/${maxPalavras}`;
         }
     }
 

@@ -31,6 +31,9 @@ function inicializarJogo() {
         console.log('Criando instância do UI manager...');
         uiManager = new UIManager(game);
 
+        // Conecta o uiManager ao game para acesso mútuo
+        game.uiManager = uiManager;
+
         // Adiciona os métodos do bot ao jogo para fácil acesso
         game.botAdivinhar = (botLevel) => bot.adivinhar(botLevel);
         game.botGerarDica = (botLevel) => bot.gerarDica(botLevel);
@@ -58,6 +61,9 @@ function restartGame() {
         game = new Game(boardContainer);
         bot = new Bot(game);
         uiManager = new UIManager(game);
+        
+        // Conecta o uiManager ao game para acesso mútuo
+        game.uiManager = uiManager;
         
         // Adiciona os métodos do bot ao jogo
         game.botAdivinhar = (botLevel) => bot.adivinhar(botLevel);

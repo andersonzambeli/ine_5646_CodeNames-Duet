@@ -10,36 +10,83 @@
     </head>
 
     <body>
-        <div class="info_jogador">
-            <h1>
-                Jogador 1 está digitando a dica.
-            </h1>
-        </div>
-        
-        <div class="board" id="board">
-            <!-- Board vai ser preenchido pelo JavaScript -->
-        </div>
-        
-        <div class="input-dica" id="input">
-            <p>Digite a dica:</p>
-            <input class="input_palavra" type="text">
-            <p>Digite o número de palavras associadas à dica:</p>
-            <input class="input_numero" type="text">
-            <button class="botao_enviar_dica">Enviar Dica</button>
-            <button class="botao_passar_vez">Passar Vez</button>
+        <div class="game-container">
+            <!-- Header com informações do jogador e progresso -->
+            <header class="game-header">
+                <div class="info_jogador">
+                    <h1 id="status-jogador">Jogador 1 está digitando a dica.</h1>
+                </div>
+                <div class="progresso-container">
+                    <div class="progresso-item">
+                        <span class="progresso-label">Jogador 1:</span>
+                        <div class="progresso-bar">
+                            <div class="progresso-fill" id="progresso-jogador1" style="width: 0%"></div>
+                        </div>
+                        <span class="progresso-texto" id="contador-jogador1">0/7</span>
+                    </div>
+                    <div class="progresso-item">
+                        <span class="progresso-label">Jogador 2:</span>
+                        <div class="progresso-bar">
+                            <div class="progresso-fill" id="progresso-jogador2" style="width: 0%"></div>
+                        </div>
+                        <span class="progresso-texto" id="contador-jogador2">0/7</span>
+                    </div>
+                </div>
+            </header>
 
-            <!-- <script>
-                let inputDica = document.getElementsByClassName("input_palavra")
-                let inputNumero = document.getElementsByClassName("input_numero")
-                inputDica.value = ""
-                inputNumero.value = ""
-            </script> -->
+            <!-- Layout principal: Board e controles lado a lado -->
+            <div class="game-main">
+                <div class="board-section">
+                    <h2 class="section-title">Tabuleiro</h2>
+                    <div class="board" id="board">
+                    </div>
+                </div>
 
-        </div>
+                <!-- Painel lateral com controles e histórico -->
+                <div class="controls-panel">
+                    <div class="input-dica card" id="input">
+                        <h2 class="section-title">Enviar Dica</h2>
+                        <div class="input-group">
+                            <label for="input_palavra">Palavra da dica:</label>
+                            <input 
+                                id="input_palavra"
+                                class="input_palavra" 
+                                type="text" 
+                                placeholder="Ex: Fruta"
+                                maxlength="20"
+                                autocomplete="off">
+                        </div>
+                        <div class="input-group">
+                            <label for="input_numero">Número de palavras:</label>
+                            <input 
+                                id="input_numero"
+                                class="input_numero" 
+                                type="number" 
+                                placeholder="Ex: 2"
+                                min="1"
+                                max="25">
+                        </div>
+                        <div class="button-group">
+                            <button class="botao_enviar_dica btn-primary">
+                                <span class="btn-icon">📤</span>
+                                Enviar Dica
+                            </button>
+                            <button class="botao_passar_vez btn-secondary">
+                                <span class="btn-icon">⏭️</span>
+                                Passar Vez
+                            </button>
+                        </div>
+                    </div>
 
-        <div class="historico-dicas" id="historico">
-            <p style="font-size: 18px;">Histórico de dicas</p>
-            <pre></pre>           
+                    <!-- Histórico de dicas -->
+                    <div class="historico-dicas card" id="historico">
+                        <h2 class="section-title">Histórico de Dicas</h2>
+                        <div class="historico-content" id="historico-content">
+                            <p class="historico-vazio">Nenhuma dica enviada ainda.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <script src="./js/game.js"></script>
