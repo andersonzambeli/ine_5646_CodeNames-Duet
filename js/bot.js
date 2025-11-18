@@ -3,6 +3,11 @@
  * @param {Game} game - Instância do jogo
  * @returns {Bot} - Instância do bot
  */
+const HOST = '127.0.0.1'
+const PORT = 8088
+
+
+
 class Bot {
     constructor(game) {
         this.game = game;
@@ -12,21 +17,26 @@ class Bot {
      * @description Bot faz previsões com base na dica atual e nível de dificuldade
      * @param {number} botLevel - Nível do bot
      */
-    adivinhar(botLevel) {
+    async adivinhar(botLevel) {
       console.log(`Bot iniciando adivinhação com nível: ${botLevel}`);
       let palavrasRestantes = [];
 
       if (botLevel === 0) {
             palavrasRestantes = this.getPalavrasRestantesDoJogador();
             console.log("Palavras que o bot pode adivinhar (nível facil):", palavrasRestantes);
-      } else {
+      } else if(botLevel === 0) {
             palavrasRestantes = this.getPalavrasRestantes();
             console.log("Palavras que o bot pode adivinhar (nível dificil):", palavrasRestantes);
+      } else {
+            palavrasRestantes = this.getPalavrasRestantes();
+            console.log("Palavras que o bot pode adivinhar (nível AI):", palavrasRestantes);
+
       }
       
       // Usar lógica inteligente baseada na dica atual
-      const palavrasParaAdivinhar = this.selecionarPalavrasInteligentes(palavrasRestantes, botLevel);
-      console.log("Palavras bot vai adivinhar (seleção inteligente):", palavrasParaAdivinhar);
+      const palavrasParaAdivinhar = await this.selecionarPalavrasInteligentes(palavrasRestantes, botLevel);
+      console.log("Palavras que o bot vai adivinhar (seleção inteligente):", palavrasParaAdivinhar);
+      console.log(palavrasParaAdivinhar)
       
       if (palavrasParaAdivinhar.length > 0) {
           this.clicarPalavrasSequencialmente(palavrasParaAdivinhar, 0);
@@ -43,30 +53,97 @@ class Bot {
      * @param {Array} palavrasRestantes - Array de palavras restantes
      * @returns {Array} - Array de palavras selecionadas inteligentemente
      */
-    selecionarPalavrasInteligentes(palavrasRestantes, botLevel) {
+    async selecionarPalavrasInteligentes(palavrasRestantes, botLevel) {
+
         const dicaAtual = this.game.dicaAtual;
         console.log("Dica atual para análise:", dicaAtual);
-        
-        // Se não há dica, usar seleção aleatória
+
         if (!dicaAtual.palavra || dicaAtual.palavra.trim() === '') {
             console.log("Nenhuma dica disponível, usando seleção aleatória");
-            return this.selecionaElementosAleatorios(palavrasRestantes, Math.min(2, palavrasRestantes.length));
+            return this.selecionaElementosAleatorios(
+                palavrasRestantes,
+                Math.min(2, palavrasRestantes.length)
+            );
         }
-        
-        const palavrasAssociadas = this.encontrarPalavrasAssociadas(dicaAtual.palavra, palavrasRestantes);
-        console.log("Palavras associadas encontradas:", palavrasAssociadas.map(p => `${p.palavra} (${p.pontuacao} pts)`));
-        
-        // Se encontrou palavras associadas, usar elas
-        if (palavrasAssociadas.length > 0) {
-            const quantidadeMaxima = Math.min(dicaAtual.numero || 2, palavrasAssociadas.length);
-            const selecao = palavrasAssociadas.slice(0, quantidadeMaxima);
-            console.log("Seleção final de palavras:", selecao.map(p => p.palavra));
-            return selecao;
+
+        if (botLevel !== 2) {
+            const palavrasAssociadas = this.encontrarPalavrasAssociadas(
+                dicaAtual.palavra,
+                palavrasRestantes
+            );
+
+            if (palavrasAssociadas.length > 0) {
+                return palavrasAssociadas.slice(0, Math.min(dicaAtual.numero || 2, palavrasAssociadas.length));
+            }
+
+            return this.selecionaElementosAleatorios(
+                palavrasRestantes,
+                Math.min(2, palavrasRestantes.length)
+            );
         }
-        
-        // Se não encontrou associações, usar seleção aleatória
-        console.log("Nenhuma associação encontrada, usando seleção aleatória");
-        return this.selecionaElementosAleatorios(palavrasRestantes, Math.min(2, palavrasRestantes.length));
+
+        // -------------------------------
+        //      BOT NIVEL 2 (WebSocket)
+        // -------------------------------
+        console.log("Mandando msg para o roteador para o GPT.");
+
+        let prompt = "Você está jogando o jogo CodeNames. As palavras brancas são: ";
+        prompt += palavrasRestantes.map(p => p.palavra).join(", ");
+        prompt += `. A dica é ${dicaAtual.palavra} com ${dicaAtual.numero} palavras associadas. `;
+        prompt += "Escolha as palavras e retorne apenas elas separadas por vírgula.";
+
+        console.log("Prompt enviado:", prompt);
+
+        try {
+            const resultado = await new Promise((resolve, reject) => {
+                const ws = new WebSocket(`ws://${HOST}:${PORT}/`);
+
+                ws.onopen = () => {
+                    ws.send(prompt);
+                };
+
+                ws.onmessage = (event) => {
+                    const palavras = event.data.split(",").map(p => p.trim());
+                    let palavras_secionadas = []
+                    for (const p of palavras) {
+                        for (const p2 of palavrasRestantes){
+                            if (p == p2.palavra){
+                                palavras_secionadas.push(p2)
+                            }
+                        }
+                    }
+                    console.log('Palavras slecionadas após receber a resposta da IA:')
+                    console.log(palavras_secionadas)
+                    resolve(palavras_secionadas);                    
+                    ws.close();
+                };
+
+                ws.onerror = (err) => {
+                    reject(err);
+                    ws.close();
+                };
+            });
+
+            console.log("Resposta do WebSocket:", resultado);
+            return resultado;
+
+        } catch (error) {
+            console.log("Erro no WebSocket, fallback para bot local:", error);
+
+            const palavrasAssociadas = this.encontrarPalavrasAssociadas(
+                dicaAtual.palavra,
+                palavrasRestantes
+            );
+
+            if (palavrasAssociadas.length > 0) {
+                return palavrasAssociadas.slice(0, Math.min(dicaAtual.numero || 2, palavrasAssociadas.length));
+            }
+
+            return this.selecionaElementosAleatorios(
+                palavrasRestantes,
+                Math.min(2, palavrasRestantes.length)
+            );
+        }
     }
 
     /**
@@ -133,7 +210,8 @@ class Bot {
         
         // Ordenar por pontuação (maior primeiro)
         palavrasAssociadas.sort((a, b) => b.pontuacao - a.pontuacao);
-        
+        console.log("Palavras associadas")
+        console.log(palavrasAssociadas)
         return palavrasAssociadas;
     }
 
@@ -221,7 +299,7 @@ class Bot {
      * @description Bot gera uma dica
      * @param {number} botLevel - Nível do bot
      */
-    gerarDica(botLevel) {
+    async gerarDica(botLevel) {
         console.log(`Bot iniciando geração de dica com nível: ${botLevel}`);
         
         
@@ -234,7 +312,7 @@ class Bot {
         }
 
         // Gerar dica inteligente baseada nas palavras restantes
-        const dicaInteligente = this.gerarDicaInteligente(palavrasRestantes, botLevel);
+        const dicaInteligente = await this.gerarDicaInteligente(palavrasRestantes, botLevel);
         console.log("Dica inteligente gerada:", dicaInteligente);
 
         const inputPalavra = document.querySelector(".input_palavra");
@@ -256,39 +334,87 @@ class Bot {
      * @param {number} botLevel - Nível do bot
      * @returns {Object} - Objeto com palavra e número da dica
      */
-    gerarDicaInteligente(palavrasRestantes, botLevel) {
+    async gerarDicaInteligente(palavrasRestantes, botLevel) {
         if (palavrasRestantes.length === 0) {
             return { palavra: "fim", numero: 0 };
         }
 
-        // TODO: Implementar gerar dica de acordo com o nivel do bot
+        
+        
+        if (botLevel !== 2) {// Encontrar palavras que podem ser agrupadas por associações comuns
+            const gruposAssociacoes = this.agruparPalavrasPorAssociacoes(palavrasRestantes);
+            console.log("Grupos de associações encontrados:", gruposAssociacoes);
 
-        // Encontrar palavras que podem ser agrupadas por associações comuns
-        const gruposAssociacoes = this.agruparPalavrasPorAssociacoes(palavrasRestantes);
-        console.log("Grupos de associações encontrados:", gruposAssociacoes);
+            // Escolher o melhor grupo (com mais palavras)
+            let melhorGrupo = null;
+            let maiorTamanho = 0;
 
-        // Escolher o melhor grupo (com mais palavras)
-        let melhorGrupo = null;
-        let maiorTamanho = 0;
-
-        for (const [associacao, palavras] of gruposAssociacoes.entries()) {
-            if (palavras.length > maiorTamanho) {
-                maiorTamanho = palavras.length;
-                melhorGrupo = { associacao, palavras };
+            for (const [associacao, palavras] of gruposAssociacoes.entries()) {
+                if (palavras.length > maiorTamanho) {
+                    maiorTamanho = palavras.length;
+                    melhorGrupo = { associacao, palavras };
+                }
             }
-        }
 
-        // Se encontrou um grupo bom, usar a associação como dica
-        if (melhorGrupo && melhorGrupo.palavras.length >= 2) {
-            const numero = Math.min(melhorGrupo.palavras.length, 3); // Máximo 3 palavras por dica
-            console.log(`Dica inteligente: "${melhorGrupo.associacao}" para ${numero} palavras`);
-            return { palavra: melhorGrupo.associacao, numero: numero };
-        }
+            // Se encontrou um grupo bom, usar a associação como dica
+            if (melhorGrupo && melhorGrupo.palavras.length >= 2) {
+                const numero = Math.min(melhorGrupo.palavras.length, 3); // Máximo 3 palavras por dica
+                console.log(`Dica inteligente: "${melhorGrupo.associacao}" para ${numero} palavras`);
+                return { palavra: melhorGrupo.associacao, numero: numero };
+            }
 
-        // Se não encontrou grupos, usar uma palavra aleatória
-        const palavraAleatoria = palavrasRestantes[Math.floor(Math.random() * palavrasRestantes.length)];
-        console.log("Usando palavra aleatória como dica:", palavraAleatoria.palavra);
-        return { palavra: palavraAleatoria.palavra, numero: 1 };
+            // Se não encontrou grupos, usar uma palavra aleatória
+            const palavraAleatoria = palavrasRestantes[Math.floor(Math.random() * palavrasRestantes.length)];
+            console.log("Usando palavra aleatória como dica:", palavraAleatoria.palavra);
+            return { palavra: palavraAleatoria.palavra, numero: 1 };
+
+            } else {
+
+            let prompt = "Você está jogando o jogo de associação CodeNames. As palavras são: Vermelho: ";
+            prompt += palavrasRestantes.map(p => p.palavra).join(", ");
+            prompt += `.Você é o jogador vermelho. É a sua vez de dar a dica. Dê a dica escrevendo somente a palavra seguida do numero de palavaras associadas sem qualquer outro texto.`;
+            
+
+            console.log("Prompt enviado:", prompt);
+
+            try {
+                const resultado = await new Promise((resolve, reject) => {
+                    const ws = new WebSocket(`ws://${HOST}:${PORT}/`);
+
+                    ws.onopen = () => {
+                        ws.send(prompt);
+                    };
+
+                    ws.onmessage = (event) => {
+                        const resposta = event.data.split(" ").map(p => p.trim());
+                        console.log('Resposta da IA:')
+                        console.log(resposta)
+                        resolve(resposta)                        
+                        
+                        
+                    };
+
+                    ws.onerror = (err) => {
+                        reject(err);
+                        ws.close();
+                    };
+                });
+
+                console.log("Resposta do WebSocket:", resultado);
+                const dica = {palavra: resultado[0], numero: resultado[1]}
+                return dica
+
+            } catch (error) {
+                console.log("Erro no WebSocket, fallback para bot local:", error);
+
+                return{palavra: "fim", numero: 0}
+
+               
+            }
+
+
+
+        }
     }
 
     /**

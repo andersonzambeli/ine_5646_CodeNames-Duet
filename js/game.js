@@ -11,7 +11,7 @@ class Game {
         
         // Configuração do jogo
         this.tipoDeJogo = 0; // 0 - vs bot, 1 - vs player
-        this.botLevel = 0; // 0 - fácil, 1 - difícil
+        this.botLevel = 2; // 0 - fácil, 1 - difícil - 2 - AI
         
         // Elementos DOM
         this.parent = parentElement;
@@ -196,7 +196,7 @@ class Game {
     /**
      * Atualizar os elementos da interface baseado no estado atual
      */
-    atualizarUIParaEstadoAtual() {
+    async atualizarUIParaEstadoAtual() {
         const infoJogador = document.querySelector("div.info_jogador h1");
         const boardButtons = this.parent.getElementsByClassName("board-item");        
         if(this.game_finalizado == true){ 
@@ -209,7 +209,7 @@ class Game {
                 case 0:
                     if (this.palavrasEncontradasDoJogador.length === 7) {
                         console.log("Todas as palavras do parceiro foram encontradas, avançando estado");
-                        this.avancarParaProximoEstado();}
+                        await this.avancarParaProximoEstado();}
                     else{
                         infoJogador.textContent = "Jogador 1 está digitando a dica.";
                     }
@@ -220,31 +220,31 @@ class Game {
                 case 1:
                     if (this.palavrasEncontradasDoJogador.length === 7) {
                         console.log("Todas as palavras do parceiro foram encontradas, avançando estado");
-                        this.avancarParaProximoEstado();
+                        await this.avancarParaProximoEstado();
                     }
                     else{
                         infoJogador.textContent = "Jogador 2 está adivinhando.";
                         if (this.botAdivinhar) {
-                            this.botAdivinhar(this.botLevel);
+                            await this.botAdivinhar(this.botLevel);
                         }
                     }
                     break;
                 case 2:
                     if (this.palavrasEncontradasDoParceiro.length === 7) {
                         console.log("Todas as palavras do jogador foram encontradas, avançando estado");
-                        this.avancarParaProximoEstado();
+                        await this.avancarParaProximoEstado();
                     }
                     else{
                         infoJogador.textContent = "Jogador 2 está digitando a dica.";
                         if (this.botGerarDica) {
-                            this.botGerarDica(this.botLevel);
+                            await this.botGerarDica(this.botLevel);
                         }
                     }
                     break;
                 case 3:
                     if (this.palavrasEncontradasDoParceiro.length === 7) {
                         console.log("Todas as palavras do jogador foram encontradas, avançando estado");
-                        this.avancarParaProximoEstado();
+                        await this.avancarParaProximoEstado();
                     }
                     else{
                         infoJogador.textContent = "Jogador 1 está adivinhando.";
